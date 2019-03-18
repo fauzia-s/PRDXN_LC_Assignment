@@ -1,0 +1,7 @@
+#Install Jupyter to view the jupyter notebook
+python3 -m pip install jupyter
+
+#Command to start the jupyter notebook,within the directory with .ipynb file
+jupyter notebook
+
+#IF the above is not possible, please view part1_ipynb.py instead of part1_ipynb.ipynb
