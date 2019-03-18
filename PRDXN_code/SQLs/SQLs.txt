@@ -1,0 +1,39 @@
+
+1)Assuming the loans with status that are ‘Current’, ‘Issued’ and ‘Fully Paid’ as “Good Loans”, what is the percentage of good loans across each the 36- and 60-month terms.
+Solution:
+Disclaimer  (Would need confirmation for these values): I'm not including the loans with status “Does not meet the credit policy…” as good loans inpite of Status:Fully Paid/Charged Off.
+%Good loans across 36month term:92.65%
+%Good loans across the 60month term:90.72%
+
+Query:
+Select (c.total_good_36*100)/a.total_36 as pct_good_loan_36, (d.total_good_60*100)/b.total_60 as pct_good_loan_60
+FROM
+(Select count(*) as total_36 from loan where term='36') a,
+(Select count(*) as total_60 from loan where term='60') b,
+(Select count(*) as total_good_36 from loan where  loan_status in ('Current','Issued','Fully Paid') and term='36') c,
+(Select count(*) as total_good_60 from loan where  loan_status in ('Current','Issued','Fully Paid') and term='60') d
+
+2)What are the title(s) of employee(s) who took the most loans and least number of loans.
+
+Solution:
+/*Gives top 10 employee titles with the most and least number of loans*/
+
+Query:
+select * from 
+(Select emp_title,count(*) as ct from loan where emp_title is NOT NULL group by emp_title order by ct desc limit 10  ) a
+UNION ALL
+select * from (Select emp_title,count(*) as ct from loan group by emp_title order by ct asc limit 10 ) b
+
+3)What is the most common purpose of the loans that are considered “Bad Loans” (please use definition mentioned for “Good Loans” in #1 above).
+Solution:
+All possible values for loan_status:
+>> df.loan_status.unique()
+array(['Fully Paid', 'Charged Off', 'Current', 'Default',
+       'Late (31-120 days)', 'In Grace Period', 'Late (16-30 days)',
+       'Does not meet the credit policy. Status:Fully Paid',
+       'Does not meet the credit policy. Status:Charged Off', 'Issued'], dtype=object)
+As per #1, anything that is not ‘Current’,’Issued’, or ‘Fully Paid’ falls under the “Bad Loans” category.
+Disclaimer  (Would need confirmation for these values): Including the loans with status as ‘Does not meet the credit policy…’ as bad loans as they were excluded in #1.
+
+Query:
+Select purpose from loan where loan_status NOT IN ('Current','Issued','Fully Paid') group by purpose order by count(*) desc limit 1
